@@ -26,7 +26,7 @@ It should also provide sample code examples for _more advanced_ topics such as :
 
 I will also try to understand the **enhancements of the latest c++ standards** C++17/C++20.
 
-  - STL algorithms execution policy
+  - [STL algorithms execution policy](stl-algorithms-policies.cpp)
 
 
 ## Ressources
