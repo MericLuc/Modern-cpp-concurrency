@@ -35,6 +35,7 @@ This repository is highly inspirated by books and online ressources such as :
   - [**C++ concurrency in action**](https://www.manning.com/books/c-plus-plus-concurrency-in-action).
   - [**Effective Modern C++**](https://www.oreilly.com/library/view/effective-modern-c/9781491908419/).
   - [**Effective C++**](https://www.eyrolles.com/Informatique/Livre/effective-c--9780321334879/).
+  - [**C++17 in detail**](https://leanpub.com/cpp17indetail?utm_source=blog&utm_campaign=adside)
 
 Of course, the ressources used will be quoted in each sample code.
 
