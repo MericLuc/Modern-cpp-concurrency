@@ -1,6 +1,6 @@
 # ![concurrency-banner](banner.png)
 
-## Concurrency in modern C++ ![Language](https://img.shields.io/badge/language-C++14-orange.svg) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
+## Concurrency in modern C++ ![Language](https://img.shields.io/badge/language-C++17-orange.svg) [![License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE.md)
 
 This repository contains a list of small experiments for **modern c++ concurrency**.
 
