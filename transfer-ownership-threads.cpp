@@ -1,5 +1,5 @@
 /************************************************************
- *               PASSING ARGUMENTS TO THREADS               *
+ *              TRANSFER OWNERSHIP OF THREADS               *
  ************************************************************/
 
 #include <thread>
