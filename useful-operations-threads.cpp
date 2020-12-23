@@ -89,7 +89,8 @@ int main()
      * the specified amount of time specified.
      * ---------------------------------------------
      * 
-     * 
+     *      template< class Rep, class Period >
+     *      void sleep_for( const std::chrono::duration<Rep, Period>& sleep_duration );
      */
     t1 = std::thread(sleepForExample); 
     t1.join();
