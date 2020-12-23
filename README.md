@@ -7,9 +7,9 @@ This repository contains a list of small experiments for **modern c++ concurrenc
 ## The basics
 
 These experiments address **basic questions** such as :
-  - What are the possible ways to build a thread ?
-  - How to pass parameters to a thread ?
-  - How to transfer the ownership of a thread ?
+  - [What are the possible ways to build a thread ?](build-and-args-threads.cpp)
+  - [How to pass parameters to a thread ?](build-and-args-threads.cpp)
+  - [How to transfer the ownership of a thread ?](transfer-ownership-threads.cpp)
   - ...
 
 ## Some tests on more advanced topics
