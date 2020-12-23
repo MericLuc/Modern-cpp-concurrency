@@ -10,6 +10,7 @@ These experiments address **basic questions** such as :
   - [What are the possible ways to build a thread ?](build-and-args-threads.cpp)
   - [How to pass parameters to a thread ?](build-and-args-threads.cpp)
   - [How to transfer the ownership of a thread ?](transfer-ownership-threads.cpp)
+  - [What are the useful operations on threads ?](useful-operations-threads.cpp)
   - ...
 
 ## Some tests on more advanced topics
