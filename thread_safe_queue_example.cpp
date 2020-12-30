@@ -5,10 +5,12 @@
 #include <iostream>
 #include <list>
 #include <vector>
+#include <map>
 #include <optional>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <variant>
 
 /*!
  * @brief queueThreadSafe
@@ -20,17 +22,45 @@
  *              - through std::optional for pop()
  */
 
+/*!
+ * @note We will make use of some C++17 features
+ *       such as std::variant for error-handling.
+ * 
+ * You can find more informations about std::variant
+ * here https://en.cppreference.com/w/cpp/utility/variant
+ * and some tests on it here 
+ * https://github.com/MericLuc/Cpp17-Features-tests/std-variant
+ */
+
 template <typename T>
 class queueThreadSafe
 {
 public:
     enum State { OPENED, CLOSED };
 
+    enum class StatusCode { 
+        ERR_NO    ,  // No error
+        ERR_FULL  ,  // Capacity error - trying to push() on a queue that is full.
+        ERR_EMPTY ,  // Capacity error - trying to get() on a queue that is empty.
+        ERR_TIMOUT,  // Timeout error  - trying to get() or push() but timed out.
+        ERR_ACCESS   // Access error   - trying to get() or push() on CLOSED queue.
+    };
+
     explicit queueThreadSafe(size_t p_cap = 0) : m_state(OPENED), m_size(0), m_cap(p_cap) {}
     ~queueThreadSafe() { close(); }
 
     queueThreadSafe(const& queueThreadSafe) = delete;
     queueThreadSafe& operator=(const& queueThreadSafe) = delete;
+
+    static std::string getStatus( StatusCode&& p_code ) { 
+        return m_statusStr.at(p_code); 
+    }
+
+    static std::string getStatus( const std::variant<T, StatusCode>& p_code ) {
+        return ( std::holds_alternative<StatusCode>(p_code) ) ? 
+                m_statusStr.at(std::get<StatusCode>(p_code)) : 
+                m_statusStr.at(StatusCode::ERR_NO);
+    }
 
     void close() 
     { 
@@ -46,8 +76,8 @@ public:
      *        Will block in case of full queue untill timeout
      *        or space appears.
      */
-    [[maybe_unused]] bool push( const T &  p_elm, 
-                                uint32_t&& p_ms = 2000 )
+    [[maybe_unused]] StatusCode push( const T &  p_elm, 
+                                      uint32_t&& p_ms = 2000 )
     {
         std::unique_lock<std::mutex> lck(m_mtx);
 
@@ -56,18 +86,21 @@ public:
                        std::chrono::milliseconds(p_ms),
                        [this] { return (m_size < m_cap && m_state == State::OPENED ); });
 
-        if ( m_size == m_cap || m_state == State::CLOSED ) 
-            return false;
+        if ( m_size == m_cap ) 
+            return StatusCode::ERR_FULL;
+
+        if ( m_state == State::CLOSED )
+            return StatusCode::ERR_ACCESS;
 
         ++m_size;
         m_data.push_back (p_elm );
         m_pop.notify_one();
 
-        return true;
+        return StatusCode::ERR_NO;
     }
 
-    [[maybe_unused]] bool push(T &&p_elm,
-                               uint32_t &&p_ms = 2000 )
+    [[maybe_unused]] StatusCode push(T &&p_elm,
+                                     uint32_t &&p_ms = 2000 )
     {
         std::unique_lock<std::mutex> lck(m_mtx);
 
@@ -76,38 +109,40 @@ public:
                        std::chrono::milliseconds(p_ms),
                        [this] { return (m_size < m_cap && m_state == State::OPENED); });
 
-        if ( m_size == m_cap || m_state == State::CLOSED )
-            return false;
+        if (m_size == m_cap)
+            return StatusCode::ERR_FULL;
+
+        if (m_state == State::CLOSED)
+            return StatusCode::ERR_ACCESS;
 
         ++m_size;
         m_data.push_back( p_elm );
         m_pop.notify_one();
 
-        return true;
+        return StatusCode::ERR_NO;
     }
 
     /*!
      * @brief pop
-     *        Will return an std::optional that contains
-     *        a value if possible, or std::nullopt if the queue
-     *        is empty after a timeout of p_ms milliseconds.
+     *        Will return a std::variant that contains
+     *        a value if possible, otherwise the corresponding StatusCode.
      */
-    std::optional<T> pop( std::chrono::milliseconds &&p_ms = std::chrono::milliseconds(1) )
+    std::variant<T, StatusCode> pop( std::chrono::milliseconds &&p_ms = std::chrono::milliseconds(1) )
     {
-        std::optional<T> l_ret;
-
         std::unique_lock<std::mutex> lck(m_mtx);
 
         // Wait untill "There is one item" OR "timeout"
         m_pop.wait_for(lck,
                        p_ms,
                        [this]{ return !m_data.empty() && m_state == State::OPENED; });
+        if ( m_data.empty() )
+            return StatusCode::ERR_EMPTY;
 
-        if ( m_data.empty() || m_state == State::CLOSED )
-            return std::nullopt;
+        if (m_state == State::CLOSED)
+            return StatusCode::ERR_ACCESS;
 
         --m_size;
-        l_ret = m_data.front();
+        T l_ret = m_data.front();
         m_data.pop_front();
         m_push.notify_one();
 
@@ -122,6 +157,15 @@ private:
     std::list<T>            m_data;  /*!< Underlying container             */
     std::condition_variable m_push;  /*!< Condition variable for producers */
     std::condition_variable m_pop ;  /*!< Condition variable for consumers */
+
+    inline static const std::map<StatusCode, std::string> m_statusStr =
+        {
+            { StatusCode::ERR_NO     , "OK!\n"},
+            { StatusCode::ERR_FULL   , "Queue is full\n"},
+            { StatusCode::ERR_EMPTY  , "Queue is empty\n"},
+            { StatusCode::ERR_TIMOUT , "Timed out before end of operation\n"},
+            { StatusCode::ERR_ACCESS , "Trying to access closed queue\n"}
+    };
 };
 
 int main()
@@ -145,14 +189,8 @@ int main()
                 {
                     std::lock_guard<std::mutex> lck(iomutex);
                     std::cout << "T" << id << ": trying to push " << (id * THREADS_NB + i) << "...";
-                    if ( !myQueue.push(id * THREADS_NB + i) )
-                    {
-                        std::cout << "Could not push (timeout or queue closed)\n";
-                    }
-                    else
-                    {
-                        std::cout << "ok!\n";
-                    }
+
+                    std::cout << queueThreadSafe<int>::getStatus(myQueue.push(id * THREADS_NB + i));
                 }
             }
         }));
@@ -166,7 +204,7 @@ int main()
             auto maybe = myQueue.pop( std::chrono::milliseconds(5) );
             {
                 std::lock_guard<std::mutex> lck(iomutex);
-                std::cerr << "T" << id << ": poped " << (maybe ? std::to_string(*maybe) : "nothing!") << "\n";
+                std::cerr << "T" << id << ": poped - " << queueThreadSafe<int>::getStatus(maybe);
             }
         }));
     }
