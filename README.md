@@ -17,6 +17,7 @@ These experiments address **basic questions** such as :
 
 It should also provide sample code examples for _more advanced_ topics such as :
   - [RAII Thread wrapper](raii-thread-wrapper.cpp)
+  - [Thread-safe Cout wrapper](thread-safe-cout-wrapper.cpp)
   - [Communication between threads](basic-threads-com.cpp)
   - [Thread-safe Stack : Access to shared data and locking mechanisms](basic-thread-safe-stack.cpp)
   - [Thread safe queue : Using condition_variables](thread_safe_queue_example.cpp)
