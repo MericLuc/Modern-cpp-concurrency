@@ -23,6 +23,7 @@ It should also provide sample code examples for _more advanced_ topics such as :
   - [Thread-safe Stack : Access to shared data and locking mechanisms](basic-thread-safe-stack.cpp)
   - [Thread safe queue : Using condition_variables](thread_safe_queue_example.cpp)
   - [Background tasks using std::async](std-async-example.cpp)
+  - [Usage of std::packaged_task](std-packaged-task-basics.cpp)
   - Lock-based thread-safe data structures and algorithms
   - Lock-free thread-safe data structures and algorithms
   - ...
