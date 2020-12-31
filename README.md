@@ -11,6 +11,7 @@ These experiments address **basic questions** such as :
   - [How to pass parameters to a thread ?](build-and-args-threads.cpp)
   - [How to transfer the ownership of a thread ?](transfer-ownership-threads.cpp)
   - [What are the useful operations on threads ?](useful-operations-threads.cpp)
+  - [Ensure single execution in multithreaded context ?](multithread-single-exec.cpp)
   - ...
 
 ## Some tests on more advanced topics
