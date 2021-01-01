@@ -19,7 +19,9 @@ These experiments address **basic questions** such as :
 It should also provide sample code examples for _more advanced_ topics such as :
   - [RAII Thread wrapper](raii-thread-wrapper.cpp)
   - [Thread-safe Cout wrapper](thread-safe-cout-wrapper.cpp)
-  - [Communication between threads](basic-threads-com.cpp)
+  - Communication between threads...
+    - [using mutex and condition_variable](basic-threads-com.cpp)
+    - [using promise and shared_future](advanced-threads-com.cpp)
   - [Thread-safe Stack : Access to shared data and locking mechanisms](basic-thread-safe-stack.cpp)
   - [Thread safe queue : Using condition_variables](thread_safe_queue_example.cpp)
   - [Background tasks using std::async](std-async-example.cpp)
