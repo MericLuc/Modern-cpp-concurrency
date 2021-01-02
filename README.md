@@ -27,7 +27,9 @@ It should also provide sample code examples for _more advanced_ topics such as :
   - [Background tasks using std::async](std-async-example.cpp)
   - [Usage of std::packaged_task](std-packaged-task-basics.cpp)
   - Lock-based thread-safe data structures and algorithms
+    - [custom std::find implementation using std::packaged_task](custom-parallel-find-1.cpp)
   - Lock-free thread-safe data structures and algorithms
+  - Thread pools
   - ...
 
 ## The latest features
