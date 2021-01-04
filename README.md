@@ -28,8 +28,7 @@ It should also provide sample code examples for _more advanced_ topics such as :
   - [Usage of std::packaged_task](std-packaged-task-basics.cpp)
   - Lock-based thread-safe data structures and algorithms
     - [custom std::find implementation using std::packaged_task](custom-parallel-find-1.cpp)
-  - Lock-free thread-safe data structures and algorithms
-  - Thread pools
+  - [Thread pools](thread-pool/)
   - ...
 
 ## The latest features
@@ -37,6 +36,10 @@ It should also provide sample code examples for _more advanced_ topics such as :
 I will also try to understand the **enhancements of the latest c++ standards** C++17/C++20.
 
   - [STL algorithms execution policy](stl-algorithms-policies.cpp)
+  - JThread
+    - [Usage example](jthread-basics.cpp)
+    - [Custom JThread implementation](jthread-custom.cpp)
+  - Coroutines
 
 
 ## Ressources
